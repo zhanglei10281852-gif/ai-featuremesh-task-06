@@ -84,15 +84,6 @@ func (b *DatasetSnapshot) Transition(to SnapshotState, now time.Time) error {
 	return nil
 }
 
-func (b *DatasetSnapshot) ApplyArrival(now time.Time) {
-	if b.State == SnapshotRejected || b.State == SnapshotApproved {
-		return
-	}
-	b.State = SnapshotMaterialized
-	b.UpdatedAt = now.UTC()
-	b.QuarantineNote = ""
-}
-
 func (b DatasetSnapshot) Clone() DatasetSnapshot { return b }
 
 func (b DatasetSnapshot) IsUsableAt(at time.Time) bool {

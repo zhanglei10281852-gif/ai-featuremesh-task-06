@@ -256,9 +256,10 @@ func (s *InferenceService) transitionAny(ctx context.Context, runID string, targ
 					return err
 				}
 			case domain.InferenceRunCompleted:
-				batch.ApplyArrival(now)
-				if batch.State != domain.SnapshotMaterialized {
-					continue
+				if batch.State != domain.SnapshotQuarantined && batch.State != domain.SnapshotRejected && batch.State != domain.SnapshotApproved {
+					if err := batch.Transition(domain.SnapshotMaterialized, now); err != nil {
+						return err
+					}
 				}
 			case domain.InferenceRunArchived:
 				if batch.State != domain.SnapshotApproved && batch.State != domain.SnapshotRejected && batch.State != domain.SnapshotMaterialized {
